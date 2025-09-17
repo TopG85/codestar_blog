@@ -1,8 +1,10 @@
+env.py
+*.pyc
+__pycache__/
+.venv/
 DS_Store
 .vscode/
-env.py
 .env
-.venv/
 venv/
 __pycache__/
 *.py[cod]
