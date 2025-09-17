@@ -12,12 +12,13 @@ class Post(models.Model):
     status = models.IntegerField(choices=STATUS, default=0)
     excerpt = models.TextField(blank=True)
     updated_on = models.DateTimeField(auto_now=True)
-
+    
+    
     class Meta:
         ordering = ["-created_on", "author"]
 
     def __str__(self):
-        return f"The title of this post is {self.title} | written by {self.author}"
+        return f"{self.title} | written by {self.author}"
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
