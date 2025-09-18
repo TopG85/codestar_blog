@@ -2,6 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from .models import Post
 
+# Create your views here.
+class PostList(generic.ListView):
+    queryset = Post.objects.filter(status=1)
+    template_name = "blog/index.html"
+    paginate_by = 6
+
 def post_detail(request, slug):
     """
     Display an individual :model:`blog.Post`.
@@ -22,11 +28,16 @@ def post_detail(request, slug):
     return render(
         request,
         "blog/post_detail.html",
-        {"post": post},
+        {"post": post,
+         "coder": "Matt Rudge"},
     )
 
+    
+    queryset = Event.objects.all()
+    event = get_object_or_404(queryset, event_id=event_id)
 
-class PostList(generic.ListView):
-    queryset = Post.objects.filter(status=1)
-    template_name = "blog/index.html"
-    paginate_by = 6
+    return render(
+        request,
+        "events/event_detail.html",
+        {"event": event}
+    )
