@@ -10,3 +10,4 @@ __pycache__/
 *.py[cod]
 settings.json
 db.sqlite3 
+blog/fixtures/
