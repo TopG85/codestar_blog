@@ -23,7 +23,7 @@
         <div class="col text-right">
           <!-- Updated on field goes in here -->
     
-          <p class="text-end"><em>Updated on: {{ about.updated_on }}</em></p>
+          <p class="text-end"><em>Updated on: {% if about.display_datetime %}{{ about.display_datetime|date:"F j, Y, g:i a" }}{% else %}{{ about.updated_on|date:"F j, Y, g:i a" }}{% endif %}</em></p>
         </div>
       </div>    
 </div>
