@@ -1,21 +1,15 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
 <div class="container mt-5">
     <div class="row">
-        <div class="col-4 text-center">
+        <div class="col-12 col-md-4 text-center">
             <img src="{% static 'images/nobody.jpg' %}" width="75%">
         </div>
-        <div class="col-8">
-            <h2>About Matt</h2>
-            <p class="lead">Matt is a software developer who designs and builds web applications with a focus on clean, maintainable Python and Django code. He enjoys shaping product ideas into reliable, well-tested features that people actually use.</p>
-
-            <p>Experience highlights include building full-stack applications, integrating third-party APIs, and deploying projects to cloud platforms. Matt prefers pragmatic solutions: automated tests, readable code, and small, iterative improvements that reduce long-term maintenance cost.</p>
-
-            <p>Typical tech stack: Python, Django, REST APIs, PostgreSQL, Docker, and modern front-end tooling. He's also interested in accessibility, performance tuning, and developer experience.</p>
-
-            <p>Outside of work Matt contributes to open-source, writes technical notes, and enjoys mentoring junior developers. For collaborations or inquiries, reach out via the contact form or the links in the footer.</p>
-
+        <div class="col-12 col-md-8">
+            <h2>{{ about.title }}</h2>
             {{ about.content | safe }}
         </div>
     </div>
@@ -23,8 +17,26 @@
         <div class="col text-right">
           <!-- Updated on field goes in here -->
     
-          <p class="text-end"><em>Updated on: {% if about.display_datetime %}{{ about.display_datetime|date:"F j, Y, g:i a" }}{% else %}{{ about.updated_on|date:"F j, Y, g:i a" }}{% endif %}</em></p>
+          <p class="text-end"><em>Updated on: {{ about.updated_on }}</em></p>
         </div>
-      </div>    
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 my-5">
+            <h2>Let's collaborate!</h2>
+            <p>I believe in the power of shared knowledge and collective effort.
+                Whether you have a project in mind, wish to co-author
+                an article, or simply want to brainstorm some ideas,
+                I'm excited to hear from you. Fill out the form
+                and we can get the ball rolling!</p>
+
+            <!-- add your form here. Your submit button should 
+                                have the classes of btn, btn-secondary -->
+            <form method="post">
+                {{ collaborate_form | crispy }}
+                {% csrf_token %}
+                <button class="btn btn-secondary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock content %}
