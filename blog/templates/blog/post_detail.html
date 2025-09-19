@@ -107,8 +107,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a id="deleteConfirm" href="#" class="btn
-          btn-danger">Delete</a>
+                <!-- Hidden form for deletion so JS can set action and submit or intercept -->
+                <form id="deleteForm" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button id="deleteConfirm" type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
