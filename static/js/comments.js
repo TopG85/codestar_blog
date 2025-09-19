@@ -19,7 +19,9 @@ for (let button of editButtons) {
     let commentContent = document.getElementById(`comment${commentId}`).innerText;
     commentText.value = commentContent;
     submitButton.innerText = "Update";
-    commentForm.setAttribute("action", `edit_comment/${commentId}`);
+  // use absolute path relative to current pathname to work on deployed hosts
+  const basePath = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+  commentForm.setAttribute("action", `${basePath}edit_comment/${commentId}`);
   });
 }
 
@@ -43,7 +45,8 @@ for (let button of deleteButtons) {
     let commentId = e.target.getAttribute("comment_id");
     // set the form action to the delete URL for this comment
     if (deleteForm) {
-      deleteForm.setAttribute('action', `delete_comment/${commentId}`);
+      const basePath = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+      deleteForm.setAttribute('action', `${basePath}delete_comment/${commentId}`);
     }
     deleteModal.show();
   });
