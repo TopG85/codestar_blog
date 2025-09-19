@@ -26,3 +26,19 @@ class CommentDeleteTests(TestCase):
 		self.assertEqual(resp.status_code, 403)
 		data = resp.json()
 		self.assertFalse(data.get('success', True))
+
+	def test_owner_can_edit_via_ajax(self):
+		self.client.login(username='tester', password='pass')
+		url = reverse('post_detail', args=[self.post.slug]) + f'edit_comment/{self.comment.id}'
+		resp = self.client.post(url, data='{}', content_type='application/json', HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_ACCEPT='application/json')
+		# empty body should be rejected
+		self.assertEqual(resp.status_code, 403)
+
+	def test_owner_can_edit_with_body_via_ajax(self):
+		self.client.login(username='tester', password='pass')
+		url = reverse('post_detail', args=[self.post.slug]) + f'edit_comment/{self.comment.id}'
+		resp = self.client.post(url, data='{"body": "new text"}', content_type='application/json', HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_ACCEPT='application/json')
+		self.assertEqual(resp.status_code, 200)
+		data = resp.json()
+		self.assertTrue(data.get('success'))
+		self.assertEqual(data.get('body'), 'new text')

@@ -25,6 +25,47 @@ for (let button of editButtons) {
   });
 }
 
+  // Intercept comment form submit for edits and send via AJAX
+  if (commentForm) {
+    commentForm.addEventListener('submit', function (e) {
+      const action = commentForm.getAttribute('action') || '';
+      if (action.includes('edit_comment')) {
+        e.preventDefault();
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const url = action;
+        const body = { body: commentText.value };
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(body),
+        })
+          .then((resp) => resp.json())
+          .then((data) => {
+            if (data.success) {
+              // update the DOM with new body
+              const commentId = action.split('/').slice(-1)[0];
+              const el = document.getElementById(`comment${commentId}`);
+              if (el) el.innerText = data.body;
+              // reset form and button
+              submitButton.innerText = 'Submit';
+              commentForm.setAttribute('action', '');
+              commentText.value = '';
+            } else {
+              alert(data.error || 'Unable to update comment');
+            }
+          })
+          .catch((err) => {
+            console.error('Edit failed', err);
+            commentForm.submit();
+          });
+      }
+    });
+  }
+
 const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
 const deleteButtons = document.getElementsByClassName("btn-delete");
 const deleteConfirm = document.getElementById("deleteConfirm");

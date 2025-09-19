@@ -66,6 +66,24 @@ def comment_edit(request, slug, comment_id):
         queryset = Post.objects.filter(status=1)
         post = get_object_or_404(queryset, slug=slug)
         comment = get_object_or_404(Comment, pk=comment_id)
+
+        # Support JSON payloads for AJAX edits
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('accept', '').find('application/json') != -1:
+            try:
+                import json
+                payload = json.loads(request.body.decode('utf-8') or '{}')
+                body_text = payload.get('body', '')
+            except Exception:
+                body_text = ''
+            if comment.author == request.user and body_text.strip():
+                comment.body = body_text
+                comment.post = post
+                comment.approved = False
+                comment.save()
+                return JsonResponse({'success': True, 'body': comment.body})
+            return JsonResponse({'success': False, 'error': 'Forbidden or invalid data'}, status=403)
+
+        # Non-AJAX form submission
         comment_form = CommentForm(data=request.POST, instance=comment)
 
         if comment_form.is_valid() and comment.author == request.user:
