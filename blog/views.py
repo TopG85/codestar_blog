@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, reverse 
 from django.views import generic
 from django.contrib import messages
-from .models import Post
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+from .models import Post, Comment
 from .forms import CommentForm
 
 # Create your views here.
@@ -55,11 +57,49 @@ def post_detail(request, slug):
         },
     )
     
-    queryset = Event.objects.all()
-    event = get_object_or_404(queryset, event_id=event_id)
+def comment_edit(request, slug, comment_id):
+    """
+    view to edit comments
+    """
+    if request.method == "POST":
 
-    return render(
-        request,
-        "events/event_detail.html",
-        {"event": event}
-    )
+        queryset = Post.objects.filter(status=1)
+        post = get_object_or_404(queryset, slug=slug)
+        comment = get_object_or_404(Comment, pk=comment_id)
+        comment_form = CommentForm(data=request.POST, instance=comment)
+
+        if comment_form.is_valid() and comment.author == request.user:
+            comment = comment_form.save(commit=False)
+            comment.post = post
+            comment.approved = False
+            comment.save()
+            messages.add_message(request, messages.SUCCESS, 'Comment Updated!')
+        else:
+            messages.add_message(request, messages.ERROR, 'Error updating comment!')
+
+    return HttpResponseRedirect(reverse('post_detail', args=[slug]))
+
+def comment_delete(request, slug, comment_id):
+    """
+    view to delete comment
+    """
+    # Only allow deletion via POST (form submission from the modal)
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse('post_detail', args=[slug]))
+
+    queryset = Post.objects.filter(status=1)
+    post = get_object_or_404(queryset, slug=slug)
+    comment = get_object_or_404(Comment, pk=comment_id)
+
+    if comment.author == request.user:
+        comment.delete()
+        # Respond differently for AJAX requests
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('accept', '').find('application/json') != -1:
+            return JsonResponse({'success': True})
+        messages.add_message(request, messages.SUCCESS, 'Comment deleted!')
+    else:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.headers.get('accept', '').find('application/json') != -1:
+            return JsonResponse({'success': False, 'error': 'You can only delete your own comments!'}, status=403)
+        messages.add_message(request, messages.ERROR, 'You can only delete your own comments!')
+
+    return HttpResponseRedirect(reverse('post_detail', args=[slug]))

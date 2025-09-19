@@ -8,14 +8,12 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("about", "0002_alter_about_content"),
+        ("about", "0002_about_display_datetime_alter_about_content"),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='about',
-            name='display_datetime',
-            field=models.DateTimeField(blank=True, null=True),
-        ),
-    ]
+    # No operations: this migration was previously used to add `display_datetime` but
+    # the field is already present (merged migration history). Keeping a no-op
+    # preserves the migration numbering while preventing duplicate column creation
+    # when running tests or creating a test database.
+    operations = []
 
