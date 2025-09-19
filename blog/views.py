@@ -1,7 +1,4 @@
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.http import JsonResponse
-import json
+from django.shortcuts import render, get_object_or_404, reverse
 from django.views import generic
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -68,31 +65,8 @@ def comment_edit(request, slug, comment_id):
         queryset = Post.objects.filter(status=1)
         post = get_object_or_404(queryset, slug=slug)
         comment = get_object_or_404(Comment, pk=comment_id)
-
-        # AJAX / JSON edit flow
-        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-        if is_ajax and request.content_type == 'application/json':
-            try:
-                payload = json.loads(request.body or b'{}')
-            except Exception:
-                return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
-
-            body = (payload.get('body') or '').strip()
-            # empty body is rejected (tests expect 403)
-            if not body:
-                return JsonResponse({'success': False, 'error': 'Empty body'}, status=403)
-
-            if comment.author != request.user:
-                return JsonResponse({'success': False, 'error': 'Not allowed'}, status=403)
-
-            comment.body = body
-            comment.post = post
-            comment.approved = False
-            comment.save()
-            return JsonResponse({'success': True, 'body': comment.body})
-
-        # Normal form POST flow
         comment_form = CommentForm(data=request.POST, instance=comment)
+        
         if comment_form.is_valid() and comment.author == request.user:
             comment = comment_form.save(commit=False)
             comment.post = post
