@@ -1,5 +1,8 @@
-from collab.forms import CollaborateForm
+from .models import CollaborateRequest
+from django import forms
 
-# Re-export CollaborateForm from the collab app so the About page can
-# import the form from `about.forms` without duplicating model logic.
-__all__ = ["CollaborateForm"]
+
+class CollaborateForm(forms.ModelForm):
+    class Meta:
+        model = CollaborateRequest
+        fields = ('name', 'email', 'message')

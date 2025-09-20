@@ -62,11 +62,12 @@ def comment_edit(request, slug, comment_id):
     view to edit comments
     """
     if request.method == "POST":
+
         queryset = Post.objects.filter(status=1)
         post = get_object_or_404(queryset, slug=slug)
         comment = get_object_or_404(Comment, pk=comment_id)
         comment_form = CommentForm(data=request.POST, instance=comment)
-        
+
         if comment_form.is_valid() and comment.author == request.user:
             comment = comment_form.save(commit=False)
             comment.post = post
@@ -86,16 +87,11 @@ def comment_delete(request, slug, comment_id):
     queryset = Post.objects.filter(status=1)
     post = get_object_or_404(queryset, slug=slug)
     comment = get_object_or_404(Comment, pk=comment_id)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     if comment.author == request.user:
         comment.delete()
-        if is_ajax:
-            return JsonResponse({'success': True})
         messages.add_message(request, messages.SUCCESS, 'Comment deleted!')
     else:
-        if is_ajax:
-            return JsonResponse({'success': False, 'error': 'Not allowed'}, status=403)
         messages.add_message(request, messages.ERROR, 'You can only delete your own comments!')
 
     return HttpResponseRedirect(reverse('post_detail', args=[slug]))
