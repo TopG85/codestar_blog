@@ -17,4 +17,4 @@ media
 env.py
 
 # VS Code
-.vscode/
+.vscode/.venv/
