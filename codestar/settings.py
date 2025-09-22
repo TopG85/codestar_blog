@@ -28,9 +28,9 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['fathomless-bastion-58644.herokuapp.com','.herokuapp.com',
+ALLOWED_HOSTS = ['guarded-forest-07303.herokuapp.com','.herokuapp.com',
                  '127.0.0.1',]
 
 
